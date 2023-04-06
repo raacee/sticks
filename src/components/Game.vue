@@ -54,6 +54,9 @@ export default {
             } else if (event.keyCode === 39 && this.selectedSticks < 3) {
                 this.selectedSticks += 1 //right
             }
+            else if (event.keyCode === 13 || event.keyCode === 18){
+                this.drawSticks()
+            }
         },
         drawSticks() {
             this.numberOfSticks -= this.selectedSticks
