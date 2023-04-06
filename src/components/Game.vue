@@ -59,8 +59,12 @@ export default {
             this.numberOfSticks -= this.selectedSticks
             this.selectedSticks = 1
             if (this.numberOfSticks === 1) {
+                this.player += this.incrementer;
+                this.incrementer *= -1
                 this.gameOver = true
-                return;
+            }
+            else if (this.numberOfSticks <= 0) {
+                this.gameOver = true
             }
             this.player += this.incrementer;
             this.incrementer *= -1
