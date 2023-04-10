@@ -1,4 +1,4 @@
-class GameTree{
+export class GameTree{
     constructor(numberOfSticks = 20, playerTurn = 0, childNodes = []) {
         this.root = new StateNode(numberOfSticks, playerTurn, childNodes)
         this.generateAllGameStates(this.root)
@@ -43,7 +43,7 @@ class GameTree{
 
 }
 
-class StateNode{
+export class StateNode{
     constructor(numberOfSticks, playerTurn, childNodes = []) {
         this.numberOfSticks = numberOfSticks
         this.playerTurn = playerTurn
