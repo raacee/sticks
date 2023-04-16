@@ -29,6 +29,7 @@
 <script>
 import Stick from "./Stick.vue";
 import {markRaw} from "vue";
+import {GameTree} from "../gametree.mjs";
 
 export default {
     name: "App",
@@ -46,7 +47,6 @@ export default {
             winner:""
         }
     },
-    computed: {},
     methods: {
         selectSticks(event) {
             if (event.keyCode === 37 && this.selectedSticks > 1) { //left
@@ -54,8 +54,12 @@ export default {
             } else if (event.keyCode === 39 && this.selectedSticks < 3) {
                 this.selectedSticks += 1 //right
             }
-            else if (event.keyCode === 13 || event.keyCode === 18){
+            else if (event.keyCode === 13){
+                console.log(event.keyCode)
                 this.drawSticks()
+            }
+            else if (event.keyCode === 83){
+
             }
         },
         drawSticks() {
@@ -81,9 +85,11 @@ export default {
         else if(this.firstplayer === 0){
             this.player = 0
         }
+        console.time()
+        new GameTree(17)
+        console.timeEnd()
     }
 }
-
 </script>
 
 <style>
