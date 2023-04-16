@@ -1,5 +1,9 @@
 <template>
-    <div style="width: 100%; height: 100%;">
+    <div style="display: flex; justify-content: center; align-items: center; position: fixed;width: 100%;height: 100%;left: 0;top: 0;" v-if="loadingGame">
+        <Loader />
+    </div>
+    <div v-else>
+        <div style="width: 100%; height: 100%;">
         <div v-if="!gameOver">
             <div class="sticks" >
                 <div v-for="i in numberOfSticks" class="stick">
@@ -24,20 +28,23 @@
             </div>
         </div>
     </div>
+    </div>
 </template>
 
 <script>
 import Stick from "./Stick.vue";
 import {markRaw} from "vue";
-import {GameTree} from "../gametree.mjs";
+import Loader from "./Loader.vue";
+import {createGameTree} from "../gametree.mjs";
 
 export default {
     name: "App",
-    components: {Stick},
+    components: {Stick,Loader},
     emits: ['end'],
     props: ['mode' , 'firstplayer'],
     data() {
         return {
+            loadingGame:false,
             players:markRaw(['CPU','You']),
             player:0,
             incrementer:1,
@@ -55,7 +62,6 @@ export default {
                 this.selectedSticks += 1 //right
             }
             else if (event.keyCode === 13){
-                console.log(event.keyCode)
                 this.drawSticks()
             }
             else if (event.keyCode === 83){
@@ -77,7 +83,9 @@ export default {
             this.incrementer *= -1
         }
     },
-    mounted() {
+    async mounted() {
+        this.loadingGame = true
+        await createGameTree(18)
         document.addEventListener("keydown", this.selectSticks)
         if(this.firstplayer === 1){
             this.player = 1
@@ -85,9 +93,7 @@ export default {
         else if(this.firstplayer === 0){
             this.player = 0
         }
-        console.time()
-        new GameTree(17)
-        console.timeEnd()
+        this.loadingGame = false
     }
 }
 </script>
