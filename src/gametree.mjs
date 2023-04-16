@@ -1,5 +1,4 @@
-
-export class GameTree {
+class GameTree {
     constructor(numberOfSticks = 20, playerTurn = 0, childStateNodes = []) {
         this.root = new StateNode(numberOfSticks, playerTurn, childStateNodes)
         this.generateAllGameStates(this.root)
@@ -96,7 +95,7 @@ export class GameTree {
 
 }
 
-export class StateNode {
+class StateNode {
     constructor(numberOfSticks, playerTurn, childStateNodes = []) {
         this.numberOfSticks = numberOfSticks
         this.playerTurn = playerTurn
@@ -207,4 +206,7 @@ class Stack{
     peek() {
         return this.items[0]
     }
+}
+export const createGameTree = async function (numberOfSticks = 20, playerTurn = 0, childStateNodes = []){
+    return new GameTree(numberOfSticks, playerTurn, childStateNodes)
 }
