@@ -29,6 +29,10 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
+html, body {
+    height: 100%;
+    margin: 0;
+}
 
 </style>
