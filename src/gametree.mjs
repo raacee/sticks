@@ -1,21 +1,93 @@
 class GameTree {
-    constructor(numberOfSticks = 20, playerTurn = 0, childStateNodes = []) {
+    constructor(numberOfSticks = 20,
+                playerTurn = 0,
+                childStateNodes = [],
+                maxDepth = -1) {
         this.root = new StateNode(numberOfSticks, playerTurn, childStateNodes)
-        this.generateAllGameStates(this.root)
-        this.relink()
+        if (numberOfSticks >= 18) maxDepth = 5;
+        this.generateAllGameStates(this.root, maxDepth)
+        // this.relink()
     }
 
-    generateAllGameStates(stateNode) {
+    minimax(startingStateNode = this.root, useHeuristic = false) {
+        // defining whether to use the heuristic evaluation function
+
+        //equivalent to "if useHeuristic parameter is true then use heuristic evaluation function ;
+        // else just evaluate the numberOfSticks of a child node
+        const evaluationFunction = useHeuristic ?
+            this.heuristicNodeEvaluation : function (stateNode) {
+                return stateNode.playerTurn === 0 ? -1 : 1;
+            };
+
+        // Base case: If the game is over (no sticks left)
+        // or if the bottom node is reached in case of partially available tree
+        if (startingStateNode.isLeaf()) {
+            return evaluationFunction(startingStateNode)
+        }
+
+        if (startingStateNode.playerTurn === 0) { // Maximizing player
+            let maxEval = -Infinity;
+            for (const childNode of startingStateNode.childStateNodes) {
+                if (!childNode.evaluation) {
+                    const evaluation = this.minimax(childNode);
+                    childNode.evaluation = evaluation
+                    maxEval = Math.max(maxEval, evaluation);
+                } else {
+                    maxEval = Math.max(maxEval, childNode.evaluation);
+                }
+            }
+            return maxEval;
+        } else { // Minimizing player
+            let minEval = Infinity;
+            for (const childNode of startingStateNode.childStateNodes) {
+                if (!childNode.evaluation) {
+                    const evaluation = this.minimax(childNode);
+                    childNode.evaluation = evaluation
+                    minEval = Math.min(minEval, evaluation);
+                } else {
+                    minEval = Math.min(minEval, childNode.evaluation);
+                }
+            }
+            return minEval;
+        }
+    }
+
+    // find best move for computer for a given node
+    findBestMove(node) {
+        let bestMove = null;
+        const isMaximizer = node.playerTurn === 0
+
+        if (isMaximizer) { // Maximizing player
+            let bestValue = -Infinity;
+            for (const childNode of node.childStateNodes) {
+                const evaluation = this.minimax(childNode);
+                if (evaluation > bestValue) {
+                    bestValue = evaluation;
+                    bestMove = childNode;
+                }
+            }
+            return bestMove;
+        }
+    }
+
+    // generate every game state recursively
+    generateAllGameStates(stateNode, maxDepth = -1, depth = 0) {
         // checks whether a node has the same state
+        if (depth === maxDepth || stateNode.shouldBeLeaf()) {
+            return
+        }
+
         stateNode.populateChildren()
 
-        if(!stateNode.isLeaf()) {
+        if (!stateNode.isLeaf()) {
             for (const node of stateNode.childStateNodes) {
-                this.generateAllGameStates(node)
+                this.generateAllGameStates(node, maxDepth, depth + 1)
             }
         }
     }
 
+    // performs removing of duplicates child nodes
+    // takes time but decrease significantly the number of nodes
     relink(currentNode = this.root) {
         if (currentNode.isLeaf()) return;
 
@@ -31,10 +103,10 @@ class GameTree {
     }
 
     // TODO : Needs work because for now it only returns the first parent it finds (implement backtracking, use stacks ?)
-    findParents(nodeToSearch, currentNode = this.root){
-        if(currentNode.childStateNodes.includes(nodeToSearch)) return currentNode
-        if(currentNode.isLeaf()) return
-        for(const childNode of currentNode.childStateNodes) {
+    findParents(nodeToSearch, currentNode = this.root, resArray = [], explored = []) {
+        if (currentNode.childStateNodes.includes(nodeToSearch)) return currentNode
+        if (currentNode.isLeaf()) return
+        for (const childNode of currentNode.childStateNodes) {
             this.findParents(nodeToSearch, childNode)
         }
     }
@@ -60,17 +132,17 @@ class GameTree {
     }
 
     // depth first search takes three times less time to execute because of the architecture of the tree
-    depthSearchStateNode(stateNode){ //Depth first search
+    depthSearchStateNode(stateNode) { //Depth first search
         const stack = new Stack()
         const explored = []
         stack.push(this.root)
-        while(stack.length() > 0){
+        while (stack.length() > 0) {
             const current = stack.pop()
-            if(current.isSameStateAs(stateNode) && stateNode !== current){ //adding this condition so that the function doesn't return the same node
+            if (current.isSameStateAs(stateNode) && stateNode !== current) { //adding this condition so that the function doesn't return the same node
                 return current
             }
-            if(!current.isLeaf()){
-                for(const node of current.childStateNodes){
+            if (!current.isLeaf()) {
+                for (const node of current.childStateNodes) {
                     if (!explored.includes(node) || !stack.contains(node)) {
                         stack.push(node)
                     }
@@ -80,17 +152,44 @@ class GameTree {
         }
     }
 
-    heuristicNodeEvaluation(node){ // CPU has to leave a multiple of 4 sticks + 1 stick (final stick) ; value must be minimized
-        return (node.numberOfSticks-1)%4
+    //Kind of work, returns minimum found depth
+    //For example, node {numberOfSticks:3,playerTurn:0} is found at depth 2, but we may take 4 turns to get to it.
+    getDepth(stateNode, currentNode = this.root, resDepth = 0) {
+        const this_ = this
+        if (stateNode === currentNode) {
+            return resDepth
+        } else {
+            return Math.min(...currentNode.childStateNodes.map(function (childNode) {
+                return this_.getDepth(stateNode, childNode, resDepth + 1)
+            }))
+        }
     }
 
-    nodeCount(currentNode = this.root){
-        if(currentNode.isLeaf()) return 1;
+
+    heuristicNodeEvaluation(node) { // CPU has to leave a multiple of 4 sticks + 1 stick (final stick)
+        if (node.playerTurn === 0 && (node.numberOfSticks - 1) % 4 === 0) return -1
+        if (node.playerTurn === 1 && (node.numberOfSticks - 1) % 4 === 0) return 1
+        else return 0
+    }
+
+    nodeCount() {
+        const stack = new Stack()
+        const explored = []
         let counter = 0
-        for(const node of currentNode.childStateNodes) {
-            counter += this.nodeCount(node)
+        stack.push(this.root)
+
+        while (stack.length() > 0) {
+            let current = stack.pop()
+            if (!explored.includes(current)) {
+                counter++
+                explored.push(current)
+            }
+            for (const child of current.childStateNodes) {
+                stack.push(child)
+            }
         }
-        return 1 + counter
+
+        return counter;
     }
 
 }
@@ -100,6 +199,7 @@ class StateNode {
         this.numberOfSticks = numberOfSticks
         this.playerTurn = playerTurn
         this.childStateNodes = childStateNodes
+        this.evaluation = null
     }
 
     addChild(stateNode) {
@@ -110,8 +210,7 @@ class StateNode {
         const index = this.childStateNodes.indexOf(childNode)
         if (index >= 0) {
             this.childStateNodes.splice(index, 1)
-        }
-        else throw new Error("Node is not child of this node")
+        } else throw new Error("Node is not child of this node")
     }
 
     populateChildren() {
@@ -135,7 +234,7 @@ class StateNode {
             || (this.isLeaf() ^ otherStateNode.isLeaf()) // if one is leaf and the other is not
         ) return false;
 
-        if(this.isLeaf() && otherStateNode.isLeaf()) return true;
+        if (this.isLeaf() && otherStateNode.isLeaf()) return true;
 
         const intersection = this.childStateNodes.filter(element => {
             otherStateNode.childStateNodes.includes(element)
@@ -144,7 +243,7 @@ class StateNode {
         return intersection.length === this.childStateNodes.length;
     }
 
-    isSameStateAs(otherStateNode){
+    isSameStateAs(otherStateNode) {
         return this.playerTurn === otherStateNode.playerTurn && this.numberOfSticks === otherStateNode.numberOfSticks
     }
 
@@ -153,6 +252,11 @@ class StateNode {
             || this.childStateNodes === null
             || this.childStateNodes.length === 0
     }
+
+    shouldBeLeaf() {
+        return this.numberOfSticks <= 1
+    }
+
 
 }
 
@@ -182,7 +286,7 @@ class Queue {
     }
 }
 
-class Stack{
+class Stack {
     constructor() {
         this.items = []
     }
@@ -207,6 +311,10 @@ class Stack{
         return this.items[0]
     }
 }
-export const createGameTree = async function (numberOfSticks = 20, playerTurn = 0, childStateNodes = []){
-    return new GameTree(numberOfSticks, playerTurn, childStateNodes)
+
+export const createGameTree = async function (numberOfSticks = 20,
+                                              playerTurn = 0,
+                                              childStateNodes = [],
+                                              maxDepth = -1) {
+    return new GameTree(numberOfSticks, playerTurn, childStateNodes, maxDepth)
 }
