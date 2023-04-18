@@ -4,12 +4,13 @@ class GameTree {
                 childStateNodes = [],
                 maxDepth = -1) {
         this.root = new StateNode(numberOfSticks, playerTurn, childStateNodes)
-        if (numberOfSticks >= 18) maxDepth = 5;
+        this.isComplete = maxDepth >= 1
+        if (numberOfSticks >= 18 && maxDepth === -1) maxDepth = 5;
         this.generateAllGameStates(this.root, maxDepth)
         // this.relink()
     }
 
-    minimax(startingStateNode = this.root, useHeuristic = false) {
+    minimax(currentStateNode = this.root, useHeuristic = !this.isComplete) {
         // defining whether to use the heuristic evaluation function
 
         //equivalent to "if useHeuristic parameter is true then use heuristic evaluation function ;
@@ -53,7 +54,7 @@ class GameTree {
     }
 
     // find best move for computer for a given node
-    findBestMove(node) {
+    findBestMove(node, useHeuristic = !this.isComplete) {
         let bestMove = null;
         const isMaximizer = node.playerTurn === 0
 
