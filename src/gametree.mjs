@@ -16,21 +16,20 @@ class GameTree {
         //equivalent to "if useHeuristic parameter is true then use heuristic evaluation function ;
         // else just evaluate the numberOfSticks of a child node
         const evaluationFunction = useHeuristic ?
-            this.heuristicNodeEvaluation : function (stateNode) {
-                return stateNode.playerTurn === 0 ? -1 : 1;
-            };
+            this.heuristicNodeEvaluation : (stateNode) => stateNode.playerTurn === 0 ? -1 : 1;
+
 
         // Base case: If the game is over (no sticks left)
         // or if the bottom node is reached in case of partially available tree
-        if (startingStateNode.isLeaf()) {
-            return evaluationFunction(startingStateNode)
+        if (currentStateNode.isLeaf()) {
+            return evaluationFunction(currentStateNode)
         }
 
-        if (startingStateNode.playerTurn === 0) { // Maximizing player
+        if (currentStateNode.playerTurn === 0) { // Maximizing player
             let maxEval = -Infinity;
-            for (const childNode of startingStateNode.childStateNodes) {
+            for (const childNode of currentStateNode.childStateNodes) {
                 if (!childNode.evaluation) {
-                    const evaluation = this.minimax(childNode);
+                    const evaluation = this.minimax(childNode,useHeuristic);
                     childNode.evaluation = evaluation
                     maxEval = Math.max(maxEval, evaluation);
                 } else {
@@ -40,9 +39,9 @@ class GameTree {
             return maxEval;
         } else { // Minimizing player
             let minEval = Infinity;
-            for (const childNode of startingStateNode.childStateNodes) {
+            for (const childNode of currentStateNode.childStateNodes) {
                 if (!childNode.evaluation) {
-                    const evaluation = this.minimax(childNode);
+                    const evaluation = this.minimax(childNode, useHeuristic);
                     childNode.evaluation = evaluation
                     minEval = Math.min(minEval, evaluation);
                 } else {
@@ -61,7 +60,7 @@ class GameTree {
         if (isMaximizer) { // Maximizing player
             let bestValue = -Infinity;
             for (const childNode of node.childStateNodes) {
-                const evaluation = this.minimax(childNode);
+                const evaluation = this.minimax(childNode, useHeuristic);
                 if (evaluation > bestValue) {
                     bestValue = evaluation;
                     bestMove = childNode;
@@ -166,10 +165,9 @@ class GameTree {
         }
     }
 
-
     heuristicNodeEvaluation(node) { // CPU has to leave a multiple of 4 sticks + 1 stick (final stick)
-        if (node.playerTurn === 0 && (node.numberOfSticks - 1) % 4 === 0) return -1
-        if (node.playerTurn === 1 && (node.numberOfSticks - 1) % 4 === 0) return 1
+        if(node.playerTurn === 1 && (node.numberOfSticks -1) % 4 === 0) return 1
+        else if(node.playerTurn === 0 && (node.numberOfSticks -1) % 4 === 0) return -1
         else return 0
     }
 
