@@ -250,6 +250,9 @@ class StateNode {
         return this.playerTurn === otherStateNode.playerTurn && this.numberOfSticks === otherStateNode.numberOfSticks
     }
 
+    //I make a distinction between isLeaf and shouldBeLeaf
+    //Because the tree is only partially generated, the bottom nodes are going to be leaf nodes with no children
+    //However they should have child nodes if their number of sticks allows them
     isLeaf() {
         return this.numberOfSticks <= 0
             || this.childStateNodes === null
@@ -259,8 +262,6 @@ class StateNode {
     shouldBeLeaf() {
         return this.numberOfSticks <= 0
     }
-
-
 }
 
 class Queue {
