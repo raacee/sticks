@@ -14,7 +14,7 @@ In a terminal run
 ```shell
 git clone https://github.com/raacee/sticks
 cd sticks
-npm install
+npm install 
 npm install -g @neutralinojs/neu
 ```
 
@@ -25,6 +25,12 @@ To compile the project run :
 ```shell
 vite build #builds the frontend
 neu build #builds the executable
+```
+
+If this didn't work try
+```shell
+./node_modules/.bin/vite build
+neu build
 ```
 
 The executables will be in ```dist/sticks```
