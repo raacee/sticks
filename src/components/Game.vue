@@ -95,12 +95,15 @@ export default {
             if(!this.gameTree) {
                 this.gameTree = markRaw(createGameTree(difference,0,[],5))
                 this.currentNode = this.gameTree.root;
+                this.gameTree.minimax(this.currentNode)
             }
             //if the current node should have children, but it doesn't
             //(meaning if we got to a bottom node of the partially generated tree)
             if(this.currentNode.isLeaf() && !this.currentNode.shouldBeLeaf()){
                 this.gameTree.generateAllGameStates(this.currentNode, 5)
+                this.gameTree.minimax(this.currentNode, true)
             }
+
 
             for (const childNode of this.currentNode.childStateNodes) {
                 if (childNode.numberOfSticks === difference) {
@@ -116,6 +119,9 @@ export default {
             this.selectedSticks = 1
 
             this.cpuPlay()
+
+            console.log(this.currentNode.numberOfSticks, this.currentNode.evaluation, this.currentNode.childStateNodes)
+
             //because gameOver is a computed property it runs every time currentNode changes
             //This means that when cpuPlays returns, currentNode will have changed and the game will be over
         },
