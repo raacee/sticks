@@ -4,7 +4,7 @@ class GameTree {
                 childStateNodes = [],
                 maxDepth = -1) {
         this.root = new StateNode(numberOfSticks, playerTurn, childStateNodes)
-        this.isComplete = maxDepth >= 1
+        this.isComplete = maxDepth <= 1
         if (numberOfSticks >= 18 && maxDepth === -1) maxDepth = 5;
         this.generateAllGameStates(this.root, maxDepth)
         // this.relink()
@@ -25,7 +25,8 @@ class GameTree {
             return evaluationFunction(currentStateNode)
         }
 
-        if (currentStateNode.playerTurn === 0) { // Maximizing player
+        // Maximizing player
+        if (currentStateNode.playerTurn === 0) {
             let maxEval = -Infinity;
             for (const childNode of currentStateNode.childStateNodes) {
                 if (!childNode.evaluation) {
@@ -54,13 +55,17 @@ class GameTree {
 
     // find best move for computer for a given node
     findBestMove(node, useHeuristic = !this.isComplete) {
+
         let bestMove = null;
         const isMaximizer = node.playerTurn === 0
 
         if (isMaximizer) { // Maximizing player
             let bestValue = -Infinity;
             for (const childNode of node.childStateNodes) {
-                const evaluation = this.minimax(childNode, useHeuristic);
+                if(!childNode.evaluation){
+                    childNode.evaluation = this.minimax(childNode, useHeuristic);
+                }
+                const evaluation = childNode.evaluation
                 if (evaluation > bestValue) {
                     bestValue = evaluation;
                     bestMove = childNode;
@@ -213,7 +218,7 @@ class StateNode {
     }
 
     populateChildren() {
-        if (this.numberOfSticks <= 1) {
+        if (this.numberOfSticks <= 0) {
             this.childStateNodes = [];
             return;
         }
@@ -247,13 +252,13 @@ class StateNode {
     }
 
     isLeaf() {
-        return this.numberOfSticks <= 1
+        return this.numberOfSticks <= 0
             || this.childStateNodes === null
             || this.childStateNodes.length === 0
     }
 
     shouldBeLeaf() {
-        return this.numberOfSticks <= 1
+        return this.numberOfSticks <= 0
     }
 
 
@@ -311,9 +316,9 @@ class Stack {
     }
 }
 
-export const createGameTree = async function (numberOfSticks = 20,
-                                              playerTurn = 0,
-                                              childStateNodes = [],
-                                              maxDepth = -1) {
+export const createGameTree = function (numberOfSticks = 20,
+                                        playerTurn = 0,
+                                        childStateNodes = [],
+                                        maxDepth = -1) {
     return new GameTree(numberOfSticks, playerTurn, childStateNodes, maxDepth)
 }
