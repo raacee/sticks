@@ -1,9 +1,9 @@
 <template>
     <div>
         <div style="width: 100%; height: 100%;">
-            <div v-if="!gameOver">
+            <div v-if="!gameOver"> <!-- v-if directive allows to render an element only if the expression returns true -->
                 <div class="sticks">
-                    <div v-for="i in numberOfSticks" class="stick">
+                    <div v-for="i in numberOfSticks" class="stick"> <!-- v-for allows to repeat the rendering of an element -->
                         <Stick/>
                         <img alt="cursor" src="../assets/triangle.png" width="60" height="48"
                              v-if="i <= selectedSticks">
@@ -55,11 +55,13 @@ export default {
             winner: ""
         }
     },
+    //computed properties are special types of properties
+    //A computed property depends on other normal properties and is updated every time its depedencies change
     computed:{
-        gameOver(){
+        gameOver(){ //for exemple, gameOver will be updated every time numberOfSticks change
             return this.numberOfSticks === 0
         },
-        numberOfSticks(){
+        numberOfSticks(){ // and numberOfSticks will update every time gameTree, or currentNode or initialSticks change
             if(this.gameTree) {
                 return this.currentNode.numberOfSticks
             }
@@ -77,7 +79,7 @@ export default {
         }
     },
     methods: {
-        selectSticks(event) {
+        selectSticks(event) { //listens to keystrokes to add or remove a selected stick
             if (event.keyCode === 37 && this.selectedSticks > 1) { //left
                 this.selectedSticks -= 1;
             } else if (event.keyCode === 39 && this.selectedSticks < 3) {
@@ -86,16 +88,17 @@ export default {
                 this.drawSticks()
             }
         },
-        drawSticks() {
-            //if there is no game tree, meaning if it's the first play
+        drawSticks() { // main event of the game ; alows player to remove a stick and the computer to play right after
             const difference =  this.numberOfSticks - this.selectedSticks
 
+            //if there is no game tree, meaning if it's the first play
             if(!this.gameTree) {
                 this.gameTree = markRaw(createGameTree(difference,0,[],5))
                 this.currentNode = this.gameTree.root;
             }
-            // else if the current node should have children, but it doesn't
-            else if(this.currentNode.isLeaf() && !this.currentNode.shouldBeLeaf()){
+            //if the current node should have children, but it doesn't
+            //(meaning if we got to a bottom node of the partially generated tree)
+            if(this.currentNode.isLeaf() && !this.currentNode.shouldBeLeaf()){
                 this.gameTree.generateAllGameStates(this.currentNode, 5)
             }
 
@@ -105,6 +108,7 @@ export default {
                 }
             }
 
+            //if the game is over after the player has played
             if(this.gameOver){
                 return
             }
@@ -112,6 +116,8 @@ export default {
             this.selectedSticks = 1
 
             this.cpuPlay()
+            //because gameOver is a computed property it runs every time currentNode changes
+            //This means that when cpuPlays returns, currentNode will have changed and the game will be over
         },
         cpuPlay(){
             if(this.player === 0){
