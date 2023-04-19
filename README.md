@@ -30,7 +30,7 @@ neu build #builds the executable
 If this didn't work try
 ```shell
 ./node_modules/.bin/vite build
-neu build
+neu build -r
 ```
 
-The executables will be in ```dist/sticks```
+The executables will be in ```dist/sticks-release.zip```
