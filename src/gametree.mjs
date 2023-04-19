@@ -4,7 +4,7 @@ class GameTree {
                 childStateNodes = [],
                 maxDepth = -1) {
         this.root = new StateNode(numberOfSticks, playerTurn, childStateNodes)
-        this.isComplete = maxDepth <= 1
+        this.isComplete = maxDepth <= 0
         if (numberOfSticks >= 18 && maxDepth === -1) maxDepth = 5;
         this.generateAllGameStates(this.root, maxDepth)
         // this.relink()
@@ -30,32 +30,27 @@ class GameTree {
             let maxEval = -Infinity;
             for (const childNode of currentStateNode.childStateNodes) {
                 if (!childNode.evaluation) {
-                    const evaluation = this.minimax(childNode,useHeuristic);
-                    childNode.evaluation = evaluation
-                    maxEval = Math.max(maxEval, evaluation);
-                } else {
-                    maxEval = Math.max(maxEval, childNode.evaluation);
+                    childNode.evaluation = this.minimax(childNode, useHeuristic)
                 }
+                maxEval = Math.max(maxEval, childNode.evaluation);
             }
+            currentStateNode.evaluation = maxEval
             return maxEval;
         } else { // Minimizing player
             let minEval = Infinity;
             for (const childNode of currentStateNode.childStateNodes) {
                 if (!childNode.evaluation) {
-                    const evaluation = this.minimax(childNode, useHeuristic);
-                    childNode.evaluation = evaluation
-                    minEval = Math.min(minEval, evaluation);
-                } else {
-                    minEval = Math.min(minEval, childNode.evaluation);
+                    childNode.evaluation = this.minimax(childNode, useHeuristic)
                 }
+                minEval = Math.min(minEval, childNode.evaluation);
             }
+            currentStateNode.evaluation = minEval
             return minEval;
         }
     }
 
     // find best move for computer for a given node
     findBestMove(node, useHeuristic = !this.isComplete) {
-
         let bestMove = null;
         const isMaximizer = node.playerTurn === 0
 
