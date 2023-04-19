@@ -166,7 +166,7 @@ class GameTree {
     }
 
     heuristicNodeEvaluation(node) { // CPU has to leave a multiple of 4 sticks + 1 stick (final stick)
-        if(node.shouldBeLeaf()){
+        if(node.shouldBeLeaf()){ //if node is leaf node
             if(node.playerTurn === 0) return 1
             else return -1
         }
