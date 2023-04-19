@@ -166,7 +166,11 @@ class GameTree {
     }
 
     heuristicNodeEvaluation(node) { // CPU has to leave a multiple of 4 sticks + 1 stick (final stick)
-        if(node.playerTurn === 1 && (node.numberOfSticks -1) % 4 === 0) return 1
+        if(node.shouldBeLeaf()){
+            if(node.playerTurn === 0) return 1
+            else return -1
+        }
+        if(node.playerTurn === 1 && (node.numberOfSticks - 1) % 4 === 0) return 1
         else if(node.playerTurn === 0 && (node.numberOfSticks -1) % 4 === 0) return -1
         else return 0
     }
