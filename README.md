@@ -30,7 +30,18 @@ neu build #builds the executable
 If this didn't work try
 ```shell
 ./node_modules/.bin/vite build
-neu build -r
+neu build
 ```
 
-The executables will be in ```dist/sticks-release.zip```
+The executables will be in ```dist/sticks```
+
+### Dev server
+
+If compilation doesn't work you can always start a dev server and play the game in your browser.  
+  
+Run one of these commands in that case :
+```shell
+vite
+# or
+./node_modules/.bin/vite 
+```
