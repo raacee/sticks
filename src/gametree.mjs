@@ -49,6 +49,18 @@ class GameTree {
         }
     }
 
+    findWinningPaths(previousNode= this.root){
+        if(previousNode.shouldBeLeaf()){
+            for (const childNode of previousNode.childStateNodes) {
+                if(!previousNode.evaluation) throw new Error("This node has not been evaluated")
+                if (childNode.evaluation === 1) {
+                    previousNode.winningChildNodes.push(childNode)
+                    this.findWinningPaths(childNode)
+                }
+            }
+        }
+    }
+
     // find best move for computer for a given node
     findBestMove(node, useHeuristic = !this.isComplete) {
         let bestMove = null;
@@ -202,6 +214,7 @@ class StateNode {
         this.numberOfSticks = numberOfSticks
         this.playerTurn = playerTurn
         this.childStateNodes = childStateNodes
+        this.winningChildNodes = []
         this.evaluation = null
     }
 
@@ -223,7 +236,7 @@ class StateNode {
         }
         for (let i = 0; i < 3; i++) {
             const newPlayerTurn = this.playerTurn === 0 ? 1 : 0
-            if(this.numberOfSticks - i - 1 >= 0) {
+            if(this.numberOfSticks - i - 1 > 0) {
                 const newChild = new StateNode(
                     this.numberOfSticks - i - 1,
                     newPlayerTurn,
