@@ -124,19 +124,11 @@ export default {
     // a watcher monitors the player value
     // each time player changes, this routine is triggered
     watch:{
-        player(oldPlayer,newPlayer){
-            if(this.gameTree === null && newPlayer === 0){
-                this.gameTree = createGameTree(this.numberOfSticks, this.player, [], 5)
-            }
-            if(this.currentNode.isLeaf() && !this.currentNode.shouldBeLeaf()){
-                console.log("here")
-                this.gameTree.generateAllGameStates(this.currentNode, 5)
-            }
-        }
+
     },
     mounted() {
         if(this.firstplayer === 0){
-            this.gameTree = createGameTree(20,0,[],5)
+            this.gameTree = createGameTree(this.initialSticks,0,[],5)
             this.currentNode = this.gameTree.root
             this.cpuPlay()
         }
