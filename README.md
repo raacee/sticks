@@ -9,7 +9,14 @@ Use the keys to select the number of sticks you want to remove and use the Retur
 
 The game is hosted on https://sticks-game-afd52.web.app/
 
-### Compile to an executable
+### Run precompiled executables
+
+Executables are provided in the sticks-executables.zip file. 
+To run the program you must extract the executables 
+and store both the resources.neu and the executable 
+you want in the same folder
+
+### Compile from source to executables
 
 To compile you need npm
 
