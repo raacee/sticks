@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+#firebase config files (only necessary for hosting)
+.firebaserc
+.firebase
+firebase.json
