@@ -5,7 +5,11 @@ The game is simple. There are 20 sticks. Each player can draw one, two, or three
 
 Use the keys to select the number of sticks you want to remove and use the Return key to remove the sticks.
 
-### Compilation
+### Play the game
+
+The game is hosted on https://sticks-game-afd52.web.app/
+
+### Compile to an executable
 
 To compile you need npm
 
@@ -37,7 +41,7 @@ The executables will be in ```dist/sticks```
 
 ### Dev server
 
-If compilation doesn't work you can always start a dev server and play the game in your browser.  
+If compilation doesn't work you can always start a dev server and play the game in your browser locally.  
   
 Run one of these commands in that case :
 ```shell
