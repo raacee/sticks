@@ -5,7 +5,7 @@ The game is simple. There are 20 sticks. Each player can draw one, two, or three
 
 Use the keys to select the number of sticks you want to remove and use the Return key to remove the sticks.
 
-### Play the game
+## Play the game
 
 The game is hosted on https://sticks-game-afd52.web.app/
 
