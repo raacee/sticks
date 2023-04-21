@@ -236,7 +236,7 @@ class StateNode {
         }
         for (let i = 0; i < 3; i++) {
             const newPlayerTurn = this.playerTurn === 0 ? 1 : 0
-            if(this.numberOfSticks - i - 1 > 0) {
+            if(this.numberOfSticks - i - 1 >= 0) {
                 const newChild = new StateNode(
                     this.numberOfSticks - i - 1,
                     newPlayerTurn,
