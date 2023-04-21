@@ -4,8 +4,8 @@ class GameTree {
                 childStateNodes = [],
                 maxDepth = -1) {
         this.root = new StateNode(numberOfSticks, playerTurn, childStateNodes)
-        this.isComplete = maxDepth <= 0
         if (numberOfSticks >= 18 && maxDepth === -1) maxDepth = 5;
+        this.isComplete = maxDepth === -1
         this.generateAllGameStates(this.root, maxDepth)
         // this.relink()
     }
